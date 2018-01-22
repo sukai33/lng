@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.htkj.lng.vehicle.dao.PositionDao">
+
+    <resultMap id="position" type="com.htkj.lng.vehicle.model.Position">
+        <result column="id" property="id"/>
+        <result column="plateNum" property="plateNum"/>
+        <result column="speed" property="speed"/>
+        <result column="direction" property="direction"/>
+        <result column="status" property="status"/>
+        <result column="reportTime" property="reportTime"/>
+        <result column="longitude" property="longitude"/>
+        <result column="latitude" property="latitude"/>
+    </resultMap>
+
+    <!-- 返回该客户的所有车辆 -->
+    <select id="findAllPosition" parameterType="map" resultMap="position">
+        SELECT * FROM POSITION
+    </select>
+
+    <select id="findPositionList" parameterType="java.util.Map"
+            resultType="com.htkj.lng.vehicle.model.Position">
+        SELECT *  FROM
+        POSITION
+        <trim prefix="where" prefixOverrides="and|or">
+            1=1
+            <if test="plateNum != null and  plateNum !=''">and plateNum LIKE CONCAT('%' , #{plateNum} , '%')</if>
+            <if test="status != null and  status !=''">and status = #{status} </if>
+            <if test="reportTime != null and reportTime != '' ">and reportTime LIKE CONCAT('%' , #{reportTime} ,'%')</if>
+        </trim>
+    </select>
+
+    <select id="findPosition" parameterType="java.util.HashMap"
+            resultType="com.htkj.lng.vehicle.model.Position">
+        SELECT *  FROM
+        POSITION WHERE plateNum = #{plateNum}
+    </select>
+
+</mapper>

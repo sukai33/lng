@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.htkj.lng.ssm.dao.DeptDao">
+    <resultMap type="com.htkj.lng.ssm.model.Dept" id="DeptResult">
+        <id property="depart_id" column="depart_id"/>
+        <result property="dept_name" column="dept_name"/>
+        <result property="dept_parentId" column="dept_parentId"/>
+        <result property="dept_info" column="dept_info"/>
+        <result property="mobile" column="mobile"/>
+        <result property="set_time" column="set_time"/>
+    </resultMap>
+
+    <select id="queryAllParentDept" resultMap="DeptResult">
+    SELECT * FROM
+    `depart_info` WHERE dept_parentId = 0
+  </select>
+
+    <select id="queryAllDept" resultMap="DeptResult">
+        SELECT * FROM `depart_info`
+    </select>
+
+    <select id="findDeptByCond" parameterType="map" resultMap="DeptResult">
+        SELECT * FROM `depart_info`
+        <where>
+            <if test="depart_id != null and  parent_id !=''"> depart_id = #{depart_id}</if>
+        </where>
+    </select>
+
+    <select id="queryUserByDept" resultType="int">
+    SELECT COUNT(*) FROM
+    sys_user u
+    INNER JOIN `role` r ON r.role_id = u.role_id
+    INNER JOIN
+    `depart_info` di ON r.dept_id = di.`depart_id`
+    WHERE
+    FIND_IN_SET(di.`depart_id`, (`getChildLst`(#{0})))
+  </select>
+
+    <select id="queryRoleByDept" resultType="int">
+    SELECT COUNT(*) FROM
+    role r
+    INNER JOIN `depart_info` di ON r.dept_id = di.`depart_id`
+    WHERE FIND_IN_SET(r.dept_id, ( `getChildLst`(#{0})))
+  </select>
+
+    <delete id="deleteDeptById">
+    DELETE FROM `depart_info` WHERE
+    FIND_IN_SET(`depart_id`, (
+    `getChildLst`(#{0})))
+  </delete>
+
+
+    <select id="queryByDeptId" resultMap="DeptResult">
+    SELECT di.*,(SELECT
+    GROUP_CONCAT(role_id) FROM `role` WHERE dept_id=#{0}) AS
+    rolesid FROM
+    `depart_info` di INNER JOIN `role` r WHERE di.depart_id
+    =#{0}
+    GROUP BY
+    di.`depart_id`
+  </select>
+
+    <update id="updateDeptById" parameterType="com.htkj.lng.ssm.model.Dept">
+    UPDATE `depart_info`
+    SET `dept_name`= #{dept_name},`dept_info`= #{dept_info},
+    `mobile`=
+    #{mobile}
+    WHERE `depart_id`=#{depart_id}
+  </update>
+
+    <insert id="insertDept" parameterType="com.htkj.lng.ssm.model.Dept"
+            keyProperty="depart_id">
+        <selectKey keyProperty="depart_id" order="AFTER"
+                   resultType="int">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        INSERT INTO `depart_info`
+        (`dept_name`,`dept_parentId`,`dept_info`,`mobile`,`set_time` )
+        VALUES(#{dept_name},#{dept_parentId},#{dept_info},#{mobile},NOW() )
+    </insert>
+
+    <select id="queryAllDeptCount" resultType="int">
+        SELECT count(*) FROM `depart_info`
+        WHERE 1=1
+        <if test=" parentId!=0 ">
+            AND (dept_parentId = #{parentId} OR
+            depart_id=#{parentId})
+        </if>
+        <if test=" is_join!=0 ">
+            <if test=" parentId==0 ">
+
+            </if>
+            <if test=" parentId!=0 ">
+                OR FIND_IN_SET(`depart_id`, ( (
+                `getChildLst`(#{parentId}) ) ))
+            </if>
+        </if>
+    </select>
+
+    <select id="testfunction" resultType="String">
+    (select `getChildLst`(1) )
+  </select>
+
+    <select id="querySaleDept" resultMap="DeptResult">
+    SELECT * FROM `dept_sale`
+    WHERE dept_parentId = 0
+  </select>
+
+
+    <select id="querySaleDeptById" resultMap="DeptResult" parameterType="java.lang.Integer">
+    SELECT * FROM dept_sale
+    WHERE  depart_id = #{VALUE}
+  </select>
+
+</mapper>

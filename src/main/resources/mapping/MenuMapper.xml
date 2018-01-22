@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.htkj.lng.ssm.dao.MenuDao">
+  <resultMap type="com.htkj.lng.ssm.model.SysMenu" id="MenuResult">
+    <id property="menu_id" column="menu_id" />
+    <result property="menu_name" column="menu_name" />
+    <result property="menu_url" column="menu_url" />
+    <result property="parent_id" column="parent_id" />
+  </resultMap>
+
+  <select id="findAll" resultMap="MenuResult">
+    select * from menu
+  </select>
+
+
+
+</mapper>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.htkj.lng.vehicle.dao.VehicleDao">
+
+    <resultMap id="vehicle" type="com.htkj.lng.vehicle.model.Vehicle">
+        <result column="id" property="id"/>
+        <result column="plateNum" property="plateNum"/>
+        <result column="userName" property="userName"/>
+        <result column="phoneNum" property="phoneNum"/>
+        <result column="company" property="company"/>
+        <result column="depNum" property="depNum"/>
+        <result column="depName" property="depName"/>
+        <result column="terNum" property="terNum"/>
+        <result column="terStatus" property="terStatus"/>
+        <result column="potNum" property="potNum"/>
+        <result column="potStatus" property="potStatus"/>
+        <result column="serviceEndTime" property="serviceEndTime"/>
+        <result column="serviceStatuse" property="serviceStatus"/>
+
+    </resultMap>
+
+    <!-- 返回该客户的所有车辆 -->
+    <select id="findAllVehicle" parameterType="map" resultMap="vehicle">
+        SELECT * FROM VEHICLE
+    </select>
+
+    <select id="findVehicleList" parameterType="java.util.Map"
+            resultType="com.htkj.lng.vehicle.model.Vehicle">
+        select *
+        from VEHICLE
+        <trim prefix="where" prefixOverrides="and|or">
+            1=1
+            <if test="plateNum != null and  plateNum !=''">and plateNum LIKE CONCAT('%' , #{plateNum} , '%')</if>
+            <if test="company != null and  company !=''">and company LIKE CONCAT('%' , #{company} , '%')</if>
+            <if test="userName != null and userName != '' ">and userName LIKE CONCAT('%' , #{userName} ,'%')</if>
+        </trim>
+    </select>
+
+    <select id="findVehicleDetail" parameterType="java.util.HashMap" resultType="com.htkj.lng.vehicle.model.Vehicle">
+        SELECT * FROM VEHICLE
+        WHERE
+        id = #{id} and plateNum = #{plateNum}
+    </select>
+    
+    <delete id="deleteVehicle" parameterType="java.util.HashMap">
+        delete  from VEHICLE where id = #{id}
+    </delete>
+
+    <update id="updateVehicle" parameterType="com.htkj.lng.vehicle.model.Vehicle">
+       UPDATE
+       VEHICLE SET
+       userName = #{userName} , phoneNum = #{phoneNum} , company = #{company},
+       depNum = #{depNum} ,depName = #{depName} , terStatus= #{terStatus},
+       potStatus= #{potStatus} , serviceEndTime= #{serviceEndTime} , serviceStatus= #{serviceStatus}
+       WHERE  id = #{id}
+
+    </update>
+
+
+</mapper>
